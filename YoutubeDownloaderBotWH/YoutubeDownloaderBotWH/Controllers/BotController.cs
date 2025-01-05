@@ -16,6 +16,7 @@ namespace YoutubeDownloaderBotWH.Controllers
         {
             var webhookUrl = Config.Value.Url;
             await bot.SetWebhook(webhookUrl, allowedUpdates: [], dropPendingUpdates: true, secretToken: Config.Value.Secret, cancellationToken: ct);
+
             return $"Webhook set to {webhookUrl}";
         }
 
@@ -24,6 +25,7 @@ namespace YoutubeDownloaderBotWH.Controllers
         {
             if (Request.Headers["X-Telegram-Bot-Api-Secret-Token"] != Config.Value.Secret)
                 return Forbid();
+
             try
             {
                 await handleUpdateService.HandleUpdateAsync(bot, update, ct);
@@ -32,6 +34,7 @@ namespace YoutubeDownloaderBotWH.Controllers
             {
                 await handleUpdateService.HandleErrorAsync(bot, exception, Telegram.Bot.Polling.HandleErrorSource.HandleUpdateError, ct);
             }
+
             return Ok();
         }
     }
