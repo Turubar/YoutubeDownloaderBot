@@ -1,6 +1,7 @@
-using Microsoft.Extensions.Options;
 using Telegram.Bot;
+using VideoLibrary;
 using YoutubeDownloaderBotWH;
+using YoutubeDownloaderBotWH.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,9 +18,12 @@ builder.Services.AddHttpClient("tgwebhook")
         return new TelegramBotClient(configSection.Get<TelegramBotConfiguration>()!.Token, httpClient);
     });
 
-builder.Services.AddSingleton<YoutubeDownloaderBotWH.Services.UpdateHandler>();
+services.AddTransient<YoutubeService>();
+services.AddTransient<YoutubeDownloaderService>();
+services.AddSingleton<TelegramApiService>();
+services.AddSingleton<UpdateHandler>();
 
-builder.Services.ConfigureTelegramBotMvc();
+services.ConfigureTelegramBotMvc();
 
 services.AddControllers();
 

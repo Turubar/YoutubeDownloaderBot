@@ -8,14 +8,14 @@ namespace YoutubeDownloaderBotWH.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BotController(IOptions<TelegramBotConfiguration> Config) : ControllerBase
+    public class BotController(IOptions<TelegramBotConfiguration> _telegramConfiguration) : ControllerBase
     {
 
         [HttpGet("setWebhook")]
         public async Task<string> SetWebHook([FromServices] ITelegramBotClient bot, CancellationToken ct)
         {
-            var webhookUrl = Config.Value.Url;
-            await bot.SetWebhook(webhookUrl, allowedUpdates: [], dropPendingUpdates: true, secretToken: Config.Value.Secret, cancellationToken: ct);
+            var webhookUrl = _telegramConfiguration.Value.Url;
+            await bot.SetWebhook(webhookUrl, allowedUpdates: [], dropPendingUpdates: true, secretToken: _telegramConfiguration.Value.Secret, cancellationToken: ct);
 
             return $"Webhook set to {webhookUrl}";
         }
@@ -23,7 +23,7 @@ namespace YoutubeDownloaderBotWH.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Update update, [FromServices] ITelegramBotClient bot, [FromServices] UpdateHandler handleUpdateService, CancellationToken ct)
         {
-            if (Request.Headers["X-Telegram-Bot-Api-Secret-Token"] != Config.Value.Secret)
+            if (Request.Headers["X-Telegram-Bot-Api-Secret-Token"] != _telegramConfiguration.Value.Secret)
                 return Forbid();
 
             try
